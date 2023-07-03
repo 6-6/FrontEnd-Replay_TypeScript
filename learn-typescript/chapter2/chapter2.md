@@ -122,11 +122,10 @@ let num: number = undefined;
 [undefined-to-number.ts](./null/undefined-to-number.ts)
 
 ```ts
-// 这样也不会报错
+// 同上
 let u: undefined;
 let num: number = u;
 ```
-[number-to-undefined.ts](./null/number-to-undefined.ts)
 
 而 `void` 类型的变量不能赋值给 `number` 类型的变量：
 
@@ -136,3 +135,4 @@ let num: number = u;
 
 // Type 'void' is not assignable to type 'number'.
 ```
+[void-to-number.ts](./null/void-to-number.ts)
