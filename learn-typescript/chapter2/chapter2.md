@@ -77,7 +77,7 @@ I'll be ${myAge + 1} years old next month.`;
 
 编译结果：
 
-```ts
+```js
 var myName = 'Tom';
 var myAge = 25;
 // 模板字符串
@@ -86,3 +86,53 @@ I'll be " + (myAge + 1) + " years old next month.";
 ```
 
 实际上看到模版字符被转译为了 `concat()` 方法，而原文章是 `+` 拼接的。说明不同版本的处理方式有可能不同的。
+
+## 空值
+JavaScript 没有空值（Void）的概念，在 TypeScript 中，可以用 `void` 表示没有任何返回值的函数：
+[void-basic.ts](./void/void-basic.ts)
+
+```ts
+function alertName(): void {
+    alert('My name is Tom');
+}
+```
+
+声明一个 `void` 类型的变量没有什么用，因为你只能将它赋值为 `undefined` 和 `null`（只在 --strictNullChecks 未指定时）：
+
+```ts
+let unusable: void = undefined;
+```
+[void-test.ts](./void/void-test.ts)
+
+## Null 和 Undefined
+
+在 TypeScript 中，可以使用 `null` 和 `undefined` 来定义这两个原始数据类型：
+
+```ts
+let u: undefined = undefined;
+let n: null = null;
+```
+[null-basic.ts](./null/null-basic.ts)
+
+与 `void` 的区别是，`undefined` 和 `null` 是所有类型的子类型。也就是说 `undefined` 类型的变量，可以赋值给 `number` 类型的变量：
+
+```ts
+let num: number = undefined;
+```
+[undefined-to-number.ts](./null/undefined-to-number.ts)
+
+```ts
+// 这样也不会报错
+let u: undefined;
+let num: number = u;
+```
+[number-to-undefined.ts](./null/number-to-undefined.ts)
+
+而 `void` 类型的变量不能赋值给 `number` 类型的变量：
+
+```ts
+let u: void;
+let num: number = u;
+
+// Type 'void' is not assignable to type 'number'.
+```
