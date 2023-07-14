@@ -209,3 +209,149 @@ something.setName('Tom');
 ### 参考
 
 -   [Basic Types # Any](http://www.typescriptlang.org/docs/handbook/basic-types.html#any)（[中文版](https://zhongsp.gitbooks.io/typescript-handbook/content/doc/handbook/Basic%20Types.html#%E4%BB%BB%E6%84%8F%E5%80%BC)）
+
+## 类型推论
+如果没有明确的指定类型，那么 TypeScript 会依照类型推论（Type Inference）的规则推断出一个类型。
+
+### 什么是类型推论
+以下代码虽然没有指定类型，但是会在编译的时候报错：
+
+```ts
+let myFavoriteNumber = 'seven';
+myFavoriteNumber = 7;
+
+// index.ts(2,1): error TS2322: Type 'number' is not assignable to type 'string'.
+```
+
+事实上，它等价于：
+
+```ts
+let myFavoriteNumber: string = 'seven';
+myFavoriteNumber = 7;
+
+// index.ts(2,1): error TS2322: Type 'number' is not assignable to type 'string'.
+```
+
+如果定义的时候没有赋值，不管之后有没有赋值，都会被推断成 any 类型而完全不被类型检查：
+
+```ts
+let myFavoriteNumber;
+myFavoriteNumber = 'seven';
+myFavoriteNumber = 7;
+```
+
+见上小节的示例：[not-declare.ts](./any/not-declare.ts)
+
+## 联合类型
+联合类型（Union Types）表示取值可以为多种类型中的一种。
+
+### 简单的例子
+```ts
+let myFavoriteNumber: string | number;
+myFavoriteNumber = 'seven';
+myFavoriteNumber = 7;
+```
+
+```ts
+let myFavoriteNumber: string | number;
+myFavoriteNumber = true;
+
+// index.ts(2,1): error TS2322: Type 'boolean' is not assignable to type 'string | number'.
+//   Type 'boolean' is not assignable to type 'number'.
+```
+
+联合类型使用 | 分隔每个类型。
+
+这里的 `let myFavoriteNumber: string | number` 的含义是，允许 `myFavoriteNumber` 的类型是 `string` 或者 `number`，但是不能是其他类型。
+
+## 访问联合类型的属性或方法
+
+当 TypeScript 不确定一个联合类型的变量到底是哪个类型的时候，我们**只能访问此联合类型的所有类型里共有的属性或方法**：
+
+```ts
+function getLength(something: string | number): number {
+    return something.length;
+}
+
+// index.ts(2,22): error TS2339: Property 'length' does not exist on type 'string | number'.
+//   Property 'length' does not exist on type 'number'.
+```
+
+上例中，`length` 不是 `string` 和 `number` 的共有属性，所以会报错。
+
+访问 `string` 和 `number` 的共有属性是没问题的：
+
+```ts
+function getString(something: string | number): string {
+    return something.toString();
+}
+```
+
+联合类型的变量在被赋值的时候，会根据类型推论的规则推断出一个类型：
+
+```ts
+let myFavoriteNumber: string | number;
+myFavoriteNumber = 'seven';
+console.log(myFavoriteNumber.length); // 5
+myFavoriteNumber = 7;
+console.log(myFavoriteNumber.length); // 编译时报错
+
+// index.ts(5,30): error TS2339: Property 'length' does not exist on type 'number'.
+```
+
+[inference-basic.ts](./type-inference/inference-basic.ts)
+
+上例中，第二行的 `myFavoriteNumber` 被推断成了 `string`，访问它的 `length` 属性不会报错。
+
+而第四行的 `myFavoriteNumber` 被推断成了 `number`，访问它的 `length` 属性时就报错了。
+
+
+
+有时候我们希望对象中的一些字段只能在创建的时候被赋值，那么可以用 `readonly` 定义只读属性：
+
+```
+interface Person {
+    readonly id: number;
+    name: string;
+    age?: number;
+    [propName: string]: any;
+}
+
+let tom: Person = {
+    id: 89757,
+    name: 'Tom',
+    gender: 'male'
+};
+
+tom.id = 9527;
+
+// index.ts(14,5): error TS2540: Cannot assign to 'id' because it is a constant or a read-only property.
+```
+
+上例中，使用 `readonly` 定义的属性 `id` 初始化后，又被赋值了，所以报错了。
+
+**注意，只读的约束存在于第一次给对象赋值的时候，而不是第一次给只读属性赋值的时候**：
+
+```
+interface Person {
+    readonly id: number;
+    name: string;
+    age?: number;
+    [propName: string]: any;
+}
+
+let tom: Person = {
+    name: 'Tom',
+    gender: 'male'
+};
+
+tom.id = 89757;
+
+// index.ts(8,5): error TS2322: Type '{ name: string; gender: string; }' is not assignable to type 'Person'.
+//   Property 'id' is missing in type '{ name: string; gender: string; }'.
+// index.ts(13,5): error TS2540: Cannot assign to 'id' because it is a constant or a read-only property.
+```
+
+上例中，报错信息有两处，第一处是在对 `tom` 进行赋值的时候，没有给 `id` 赋值。
+
+第二处是在给 `tom.id` 赋值的时候，由于它是只读属性，所以报错了。
