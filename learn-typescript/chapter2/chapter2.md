@@ -70,7 +70,7 @@ var infinityNumber = Infinity;
 
 为什么这里被编译为var，而不是let？因为默认为 es5 ，`tsconfig.json` 可以进行设置 `compilerOptions` 相应转译版本。
 
-## 字符串
+### 字符串
 
 使用 `string` 定义字符串类型：[string-basic.ts](./string/string-basic.ts)
 
@@ -95,7 +95,7 @@ I'll be " + (myAge + 1) + " years old next month.";
 
 实际上看到模版字符被转译为了 `concat()` 方法，而原文章是 `+` 拼接的。说明不同版本的处理方式有可能不同的。
 
-## 空值
+### 空值
 JavaScript 没有空值（Void）的概念，在 TypeScript 中，可以用 `void` 表示没有任何返回值的函数：
 [void-basic.ts](./void/void-basic.ts)
 
@@ -112,7 +112,7 @@ let unusable: void = undefined;
 ```
 [void-test.ts](./void/void-test.ts)
 
-## Null 和 Undefined
+### Null 和 Undefined
 
 在 TypeScript 中，可以使用 `null` 和 `undefined` 来定义这两个原始数据类型：
 
@@ -272,7 +272,7 @@ myFavoriteNumber = true;
 
 这里的 `let myFavoriteNumber: string | number` 的含义是，允许 `myFavoriteNumber` 的类型是 `string` 或者 `number`，但是不能是其他类型。
 
-## 访问联合类型的属性或方法
+### 访问联合类型的属性或方法
 
 当 TypeScript 不确定一个联合类型的变量到底是哪个类型的时候，我们**只能访问此联合类型的所有类型里共有的属性或方法**：
 
@@ -415,7 +415,7 @@ let result: ResultData = {
 };
 ```
 
-## 任意属性
+### 任意属性
 
 有时候我们希望一个接口允许有任意的属性，可以使用如下方式：
 
@@ -482,7 +482,7 @@ let tom: Person = {
 ```
 [interface-props2.ts](./interface/interface-props2.ts)
 
-## 只读属性
+### 只读属性
 
 有时候我们希望对象中的一些字段只能在创建的时候被赋值，那么可以用 `readonly` 定义只读属性：
 
